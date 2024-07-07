@@ -8,8 +8,8 @@ import { useGlobalContext } from "../lib/LevelContext";
 
 export default function RackBase() {
   type GridBase = {
-      cells: Number,
-      rows: Number
+      cells: number,
+      rows: number
   };
   const rackBase : GridBase = {
     cells: 9,

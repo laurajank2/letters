@@ -4,8 +4,8 @@ import Grid from "./grid";
 
 export default function GridBase() {
   type GridBase = {
-      cells: Number,
-      rows: Number
+      cells: number,
+      rows: number
   };
   const gridBase : GridBase = {
     cells: 9,

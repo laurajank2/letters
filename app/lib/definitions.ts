@@ -1,19 +1,19 @@
 //contains definitions of types
 
 export type GridBase = {
-    cells: Number,
-    rows: Number
+    cells: number,
+    rows: number
 };
 
 export type GridFillContent = {
-    fill: Array<Array<String>>
-    setFill: (Fill: Array<Array<String>>) => void;
+    fill: Array<Array<string>>
+    setFill: (Fill: Array<Array<string>>) => void;
 };
 
 export type Tile = {
-    letter: String | null,
-    row: Number,
-    col: Number
+    letter: string | null,
+    row: number,
+    col: number
 }
 
 export type TileContextContent = {

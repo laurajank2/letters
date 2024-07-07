@@ -1,24 +1,29 @@
 'use client';
 
 import React from 'react';
-import { GridBase } from '../lib/definitions';
+import { GridBase, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGlobalContext } from '../lib/LevelContext';
+import { useGlobalContext, useSelectedTileContext } from '../lib/LevelContext';
 
 export default function Rack ({grid}:{grid:GridBase})  {
   const cells = new Array(grid.cells).fill(0);
   const rows = new Array(grid.rows).fill(0);
 
-  //sample context change
-  const { copy, setCopy } = useGlobalContext()
-  console.log("former copy: " + copy);
+  //selected tile change
+  const { tile, setTile } = useSelectedTileContext()
 
-  const handleClick = (e:  React.MouseEvent<HTMLLIElement>) => {
-    //sample context change
-    setCopy("new sample")
+  const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
 
-    console.log("new copy: " + copy)
     const tile : HTMLLIElement = (e.target as HTMLLIElement);
+
+    var newTile: Tile = {
+        letter: tile.textContent,
+        row: row,
+        col: col
+    }
+    
+
+    setTile(newTile)
 
     if (tile.classList.contains('selected')) {
       tile.classList.remove('selected');
@@ -33,7 +38,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
       {rows.map((row, indexRow) => (
         <ul className="row" key={indexRow}>
           {cells.map((cell, indexCell) => (
-            <li key={indexCell} className="tile" onClick={handleClick} >{`${indexCell}`}</li>
+            <li key={indexCell} className="tile" onClick={(e)=> handleClick(e, indexRow, indexCell)} >{`${indexCell}`}</li>
           ))}
         </ul>
       ))}

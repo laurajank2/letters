@@ -2,9 +2,9 @@
 
 import React from 'react';
 import CSS from "csstype";
-import { GridBase } from '../lib/definitions';
+import { GridBase, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGridFillContext } from '../lib/LevelContext';
+import { useGridFillContext, useSelectedTileContext } from '../lib/LevelContext';
 useGridFillContext
 
 export default function Grid ({grid}:{grid:GridBase})  {
@@ -12,7 +12,9 @@ export default function Grid ({grid}:{grid:GridBase})  {
   const rows = new Array(grid.rows).fill(0);
 
   const { fill, setFill } = useGridFillContext()
-  const gridStatus:Array<Array<String>> = fill;
+  const gridStatus:Array<Array<string>> = fill;
+
+  
 
   console.log(gridStatus)
 
@@ -36,7 +38,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
     backgroundColor: "tan"
   }
 
-  const chooseStyle = (indices: Array<Number>): CSS.Properties => {
+  const chooseStyle = (indices: Array<number>): CSS.Properties => {
     if ((indices[0] == 0 && indices[1] == 0) || (indices[0] == 0 && indices[1] == 8) || (indices[0] == 8 && indices[1] == 0) || (indices[0] == 8 && indices[1] == 8)) {
       return tripleWordStyle
     } else if ((indices[0] == 4 && indices[1] == 0) || (indices[0] == 0 && indices[1] == 4) || (indices[0] == 8 && indices[1] == 4) || (indices[0] == 4 && indices[1] == 8)) {
@@ -49,14 +51,17 @@ export default function Grid ({grid}:{grid:GridBase})  {
     return normalStyle
   }
 
-  const handleClick = (e:  React.MouseEvent<HTMLLIElement>) => {
-    const space : HTMLLIElement = (e.target as HTMLLIElement);
-    if (space.classList.contains('selected')) {
-      space.classList.remove('selected');
-    } else {
-      space.classList.add('selected');
-    }
-  };
+//selected tile change
+const { tile, setTile } = useSelectedTileContext()
+
+const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
+
+  const space : HTMLLIElement = (e.target as HTMLLIElement);
+  space.textContent = tile.letter ? tile.letter : " "
+
+  fill[row][col] = tile.letter ? tile.letter : " "
+
+};
 
   return (
     <main>
@@ -65,7 +70,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
         
         <ul className="row" key={indexRow}>
           {cells.map((cell, indexCol) => (
-            <li key={indexCol} id={`${indexCol}, ${indexRow}`} className="space" style={chooseStyle([indexCol, indexRow])} onClick={handleClick}>{`${gridStatus[indexRow][indexCol]}`}</li>
+            <li key={indexCol} id={`${indexCol}, ${indexRow}`} className="space" style={chooseStyle([indexCol, indexRow])} onClick={(e)=> handleClick(e, indexRow, indexCol)}>{`${gridStatus[indexRow][indexCol]}`}</li>
           ))}
         </ul>
       ))}
