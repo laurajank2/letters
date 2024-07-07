@@ -3,10 +3,10 @@ import "./styles.css";
 import Grid from "./grid";
 
 export default function GridBase() {
-    type GridBase = {
-        cells: Number,
-        rows: Number
-    };
+  type GridBase = {
+      cells: Number,
+      rows: Number
+  };
   const gridBase : GridBase = {
     cells: 9,
     rows: 9
@@ -15,7 +15,7 @@ export default function GridBase() {
 
 
   return (
-    <div className="app">
+    <div className="grid-base">
       <Grid
         grid={gridBase}
       />

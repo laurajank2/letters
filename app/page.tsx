@@ -1,11 +1,10 @@
-import Image from "next/image";
-import GridBase from "./ui/gridBase";
+import Gameplay from "./ui/gameplay";
 
 export default function Home() {
   return (
-    <main>
+    <main className="app">
       <h1>Letters</h1>
-      <GridBase />
+      <Gameplay/>
     </main>
   );
 }
