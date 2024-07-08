@@ -96,7 +96,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
             rowWord = rowWord + fill[j][i];
           }
           if (rowWord.length > 1 || rack.length == 8) {
-            toCheck.push(colWord)
+            toCheck.push(rowWord)
           }
           rowWord = ""
         } else if (fill[j][i] != " ") {
@@ -146,13 +146,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
   const putTileOnBoardFromRack = async (space:  HTMLLIElement, row: number, col: number) => {
 
-    
-    if (!checkBoardValidity(space, row, col)) {
-      return
-    }
 
-
-    
     var newSelectedTile: Tile = {
       letter: space.textContent,
       row: row,
@@ -166,6 +160,13 @@ export default function Grid ({grid}:{grid:GridBase})  {
     fill[row][col] = tile.letter ? tile.letter : " ";
     const newFill = fill;
     setFill(newFill);
+
+    //give old tile back to rack if necessary
+    if (newSelectedTile.from == "board" && newSelectedTile.letter != null) {
+      rack.push(newSelectedTile.letter);
+      let newRack = rack;
+      setRack(newRack);
+    }
     
     //remove the tile from rack
     if (tile.from == "rack") {
@@ -188,7 +189,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
   }
 
-  const takeTileFromBoard = (space:  HTMLLIElement, row: number, col: number) => {
+  const takeTileFromBoard = async (space:  HTMLLIElement, row: number, col: number) => {
     var newSelectedTile: Tile = {
       letter: space.textContent,
       row: row,
@@ -200,10 +201,18 @@ export default function Grid ({grid}:{grid:GridBase})  {
     tile.html?.classList.remove('selected');
     space.classList.add('selected');
     setTile(newSelectedTile);
+
+    const validWords: boolean = await checkWordValidity()
+    if (!validWords) {
+      const newAdvert = "Something on your board isn't a word. Keep trying!"
+      setAdvert(newAdvert);
+    } else {
+      checkBoardValidity(space, row, col);
+    }
     
   }
 
-  const boardToBoard =  (space:  HTMLLIElement, row: number, col: number) => {
+  const boardToBoard =  async (space:  HTMLLIElement, row: number, col: number) => {
     var newSelectedTile: Tile = {
       letter: space.textContent,
       row: row,
@@ -237,6 +246,14 @@ export default function Grid ({grid}:{grid:GridBase})  {
     const newFill = fill;
     setFill(newFill);
     setTile(neutralTile);
+
+    const validWords: boolean = await checkWordValidity()
+    if (!validWords) {
+      const newAdvert = "Something on your board isn't a word. Keep trying!"
+      setAdvert(newAdvert);
+    } else {
+      checkBoardValidity(space, row, col);
+    }
   }
 
   const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
