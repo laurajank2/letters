@@ -41,6 +41,15 @@
     justify-content: center;
     align-items: center;
   }
+
+  .tray {
+    height: 5px;
+    background-color: black;
+  }
+
+  .tray:hover {
+    background-color: blue;
+  }
   
   .space {
     font-size: 25px;
@@ -74,7 +83,6 @@
     margin-top: 5vh;
     padding-bottom: 5px;
     min-width: 60px;
-    border-bottom: solid;
   }
 
   .grid-base {

@@ -19,8 +19,6 @@ export default function RackBase() {
     rows: 1
   };
 
-  const { copy, setCopy } = useGlobalContext()
-
 
   return (
     <div className="rack-base">

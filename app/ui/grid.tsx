@@ -136,11 +136,6 @@ const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: numb
 
   const space : HTMLLIElement = (e.target as HTMLLIElement);
 
-  // if (space.classList.contains('selected')) {
-  // space.classList.remove('selected');
-  // } else {
-  // space.classList.add('selected');
-  // }
 
   if (tile.from == "rack") {
     putTileOnBoardFromRack(space, row, col);
@@ -150,11 +145,6 @@ const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: numb
     boardToBoard(space, row, col);
   }
   
-  
-
-
-  
-
 };
 
   return (
