@@ -28,6 +28,11 @@ export type RackContextContent = {
     setRack: (rack: string[]) => void;
 };
 
+//sample of changeable context
+export type SubmitContent = {
+    submit: boolean
+    setSubmit:(c: boolean) => void
+}
 
 //sample of changeable context
 export type AdvertContent = {
@@ -40,3 +45,12 @@ export type GlobalContent = {
     copy: string
     setCopy:(c: string) => void
 }
+
+export type JSONValue =
+| null
+| boolean
+| number
+| string
+| JSONValue[]
+| { [key: string]: JSONValue }
+;

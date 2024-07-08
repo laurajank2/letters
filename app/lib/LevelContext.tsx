@@ -1,6 +1,6 @@
 import { create } from 'domain';
 import { createContext, useState, useContext } from 'react';
-import { AdvertContent, GlobalContent, GridFillContent, RackContextContent, Tile, TileContextContent } from './definitions';
+import { AdvertContent, GlobalContent, GridFillContent, RackContextContent, SubmitContent, Tile, TileContextContent } from './definitions';
 import React from 'react';
 
 //tracks spaces filled in grid
@@ -42,6 +42,13 @@ advert: 'Make Words!', // set a default value
 setAdvert: () => {},
 })
 export const useAdvertContext = () => useContext(AdvertContext)
+
+//sample create context
+export const SubmitContext = createContext<SubmitContent>({
+submit: false, // set a default value
+setSubmit: () => {},
+})
+export const useSubmitContext = () => useContext(SubmitContext)
 
 //sample create context
 export const MyGlobalContext = createContext<GlobalContent>({

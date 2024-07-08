@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState} from "react";
-import { AdvertContext, GridFillContext, RackContext, SelectedTileContext, } from "../lib/LevelContext";
+import { AdvertContext, GridFillContext, RackContext, SelectedTileContext, SubmitContext, } from "../lib/LevelContext";
 import { useContext } from "react";
 
 import GridBase from "./gridBase";
@@ -29,6 +29,8 @@ export default function Gameplay() {
 
     const [advert, setAdvert] = useState<string>("Make words!")
 
+    const [submit, setSubmit] = useState<boolean>(false)
+
 
     
     return (
@@ -36,9 +38,11 @@ export default function Gameplay() {
             <SelectedTileContext.Provider value={{tile, setTile}}>
                 <RackContext.Provider value = {{rack, setRack}}>
                     <AdvertContext.Provider value= {{advert, setAdvert}}>
-                    <GridBase />
-                    <RackBase />
-                    <h2 className="advert">{advert}</h2>
+                        <SubmitContext.Provider value = {{submit, setSubmit}}>
+                            <GridBase />
+                            <RackBase />
+                            <h2 className="advert">{advert}</h2>
+                        </SubmitContext.Provider>
                     </AdvertContext.Provider>
                 </RackContext.Provider>
             </SelectedTileContext.Provider>

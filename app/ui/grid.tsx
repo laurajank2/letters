@@ -5,6 +5,7 @@ import CSS from "csstype";
 import { GridBase, Tile } from '../lib/definitions';
 import { useContext } from 'react';
 import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack, useAdvertContext } from '../lib/LevelContext';
+import axios from 'axios';
 
 export default function Grid ({grid}:{grid:GridBase})  {
   const cells = new Array(grid.cells).fill(0);
@@ -53,132 +54,188 @@ export default function Grid ({grid}:{grid:GridBase})  {
     return normalStyle
   }
 
-//selected tile change
-const { tile, setTile } = useSelectedTileContext()
+  //selected tile change
+  const { tile, setTile } = useSelectedTileContext()
 
-const checkValidity = (space:  HTMLLIElement, row: number, col: number) => {
-  if (rack.length == 9) {
-    if (row != 4 || col != 4) {
-      const newAdvert = "Place first tile in the center of the board"
-      setAdvert(newAdvert);
-      return false;
+  const checkIsWord = (word: string) => {
+    let wordData = null;
+    axios
+        .get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+        .then(data => wordData=data)
+        .catch(error => console.log(error));
+    return (wordData === null) ? false : true;
+  }
+
+  const checkWordValidity = () => {
+    console.log("fill: " + fill)
+    let toCheck: Array<string> = [];
+    let colWord = "";
+    let rowWord = "";
+    for (let i = 0; i < fill.length; i++) {
+      for (let j = 0; j < fill.length; j++) {
+        //check column word
+        if(colWord != "" && (fill[i][j] == " " || j==8)) {
+          if (fill[i][j] != " ") {
+            colWord = colWord + fill[i][j];
+          }
+          toCheck.push(colWord)
+          colWord = ""
+        } else if (fill[i][j] != " ") {
+          colWord = colWord + fill[i][j];
+        }
+
+        //check row word
+        if(rowWord != "" && (fill[j][i] == " " || i==8)) {
+          if (fill[j][i] != " ") {
+            rowWord = rowWord + fill[j][i];
+          }
+          toCheck.push(rowWord)
+          rowWord = ""
+        } else if (fill[j][i] != " ") {
+          rowWord = rowWord + fill[j][i];
+        }
+      }
+    }
+
+    console.log("words to check: " + toCheck);
+    toCheck.forEach(word => {
+      if (!checkIsWord(word)) {
+        return false
+      }
+    });
+    return true
+  }
+
+  const checkBoardValidity = (space:  HTMLLIElement, row: number, col: number) => {
+    if (rack.length == 9) {
+      if (row != 4 || col != 4) {
+        const newAdvert = "Place first tile in the center of the board"
+        setAdvert(newAdvert);
+        return false;
+      } else {
+        const newAdvert = "Make words!"
+        setAdvert(newAdvert);
+        return true;
+      }
     } else {
-      const newAdvert = "Make words!"
-      setAdvert(newAdvert);
-      return true;
-    }
-  } else {
-    if ((fill[row+1] === undefined || fill[row+1][col] == " ") && (fill[row-1] === undefined || fill[row-1][col] == " ") && (fill[row][col+1] === undefined|| fill[row][col+1] == " ") && (fill[row][col-1] === undefined || fill[row][col-1] == " ")) {
-      const newAdvert = "Place tile next to one on the board"
-      setAdvert(newAdvert);
-      return false;
-    } else {
-      const newAdvert = "Make words!"
-      setAdvert(newAdvert);
-      return true;
+      if ((fill[row+1] === undefined || fill[row+1][col] == " ") && (fill[row-1] === undefined || fill[row-1][col] == " ") && (fill[row][col+1] === undefined|| fill[row][col+1] == " ") && (fill[row][col-1] === undefined || fill[row][col-1] == " ")) {
+        const newAdvert = "Place tile next to one on the board"
+        setAdvert(newAdvert);
+        return false;
+      } else {
+        const newAdvert = "Make words!"
+        setAdvert(newAdvert);
+        return true;
+      }
     }
   }
-}
 
-const putTileOnBoardFromRack = (space:  HTMLLIElement, row: number, col: number) => {
+  const putTileOnBoardFromRack = (space:  HTMLLIElement, row: number, col: number) => {
 
-  
-  if (!checkValidity(space, row, col)) {
-    return
-  }
-  
-  var newSelectedTile: Tile = {
-    letter: space.textContent,
-    row: row,
-    col: col,
-    html: space,
-    from: (space.textContent == " ") ? "start" : "board"
-  }
-  //set space content to the tile's letter
-  space.textContent = tile.letter ? tile.letter : " ";
-  //set the fill grid to the tile's letter
-  fill[row][col] = tile.letter ? tile.letter : " ";
-  const newFill = fill;
-  setFill(newFill);
-  
-  //remove the tile from rack
-  if (tile.from == "rack") {
-    if (tile.html?.classList.contains('selected')) {
-      tile.html?.classList.remove('selected');
-      const newRack = removeFromRack(tile.letter? tile.letter: "", rack);
-      setRack(newRack);
+    
+    if (!checkBoardValidity(space, row, col)) {
+      return
     }
-  }
-  
-  setTile(newSelectedTile);
-
-}
-
-const takeTileFromBoard = (space:  HTMLLIElement, row: number, col: number) => {
-  var newSelectedTile: Tile = {
-    letter: space.textContent,
-    row: row,
-    col: col,
-    html: space,
-    from: (space.textContent == " ") ? "start" : "board"
-  }
-
-  tile.html?.classList.remove('selected');
-  space.classList.add('selected');
-  setTile(newSelectedTile);
-  
-}
-
-const boardToBoard =  (space:  HTMLLIElement, row: number, col: number) => {
-  var newSelectedTile: Tile = {
-    letter: space.textContent,
-    row: row,
-    col: col,
-    html: space,
-    from: (space.textContent == " ") ? "start" : "board"
-  }
-
-  tile.html?.classList.remove('selected');
-
-  //set space content to the tile's letter
-  space.textContent = tile.letter ? tile.letter : " "
-  //set the fill grid to the tile's letter
-  fill[row][col] = tile.letter ? tile.letter : " "
 
 
+    
+    var newSelectedTile: Tile = {
+      letter: space.textContent,
+      row: row,
+      col: col,
+      html: space,
+      from: (space.textContent == " ") ? "start" : "board"
+    }
+    //set space content to the tile's letter
+    space.textContent = tile.letter ? tile.letter : " ";
+    //set the fill grid to the tile's letter
+    fill[row][col] = tile.letter ? tile.letter : " ";
+    const newFill = fill;
+    setFill(newFill);
+    
+    //remove the tile from rack
+    if (tile.from == "rack") {
+      if (tile.html?.classList.contains('selected')) {
+        tile.html?.classList.remove('selected');
+        const newRack = removeFromRack(tile.letter? tile.letter: "", rack);
+        setRack(newRack);
+      }
+    }
+    
+    setTile(newSelectedTile);
 
-  space.textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
+    if (!checkWordValidity()) {
+      const newAdvert = "Something on your board isn't a word. Keep trying!"
+      setAdvert(newAdvert);
+    }
 
-  fill[tile.row][tile.col] = newSelectedTile.letter ? newSelectedTile.letter : " "
-
-  const dummyLi: HTMLLIElement = document.createElement('li')
-  var neutralTile: Tile = {
-    letter: " ",
-    row: -1,
-    col: -1,
-    html: dummyLi,
-    from: "start"
   }
 
-  const newFill = fill;
-  setFill(newFill);
-  setTile(neutralTile);
-}
+  const takeTileFromBoard = (space:  HTMLLIElement, row: number, col: number) => {
+    var newSelectedTile: Tile = {
+      letter: space.textContent,
+      row: row,
+      col: col,
+      html: space,
+      from: (space.textContent == " ") ? "start" : "board"
+    }
 
-const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
-
-  const space : HTMLLIElement = (e.target as HTMLLIElement);
-
-
-  if (tile.from == "rack") {
-    putTileOnBoardFromRack(space, row, col);
-  } else if (tile.from == "start") {
-    takeTileFromBoard(space,row,col);
-  } else if (tile.from == "board") {
-    boardToBoard(space, row, col);
+    tile.html?.classList.remove('selected');
+    space.classList.add('selected');
+    setTile(newSelectedTile);
+    
   }
-  
-};
+
+  const boardToBoard =  (space:  HTMLLIElement, row: number, col: number) => {
+    var newSelectedTile: Tile = {
+      letter: space.textContent,
+      row: row,
+      col: col,
+      html: space,
+      from: (space.textContent == " ") ? "start" : "board"
+    }
+
+    tile.html?.classList.remove('selected');
+
+    //set space content to the tile's letter
+    space.textContent = tile.letter ? tile.letter : " "
+    //set the fill grid to the tile's letter
+    fill[row][col] = tile.letter ? tile.letter : " "
+
+
+
+    space.textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
+
+    fill[tile.row][tile.col] = newSelectedTile.letter ? newSelectedTile.letter : " "
+
+    const dummyLi: HTMLLIElement = document.createElement('li')
+    var neutralTile: Tile = {
+      letter: " ",
+      row: -1,
+      col: -1,
+      html: dummyLi,
+      from: "start"
+    }
+
+    const newFill = fill;
+    setFill(newFill);
+    setTile(neutralTile);
+  }
+
+  const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
+
+    const space : HTMLLIElement = (e.target as HTMLLIElement);
+
+
+    if (tile.from == "rack") {
+      putTileOnBoardFromRack(space, row, col);
+    } else if (tile.from == "start") {
+      takeTileFromBoard(space,row,col);
+    } else if (tile.from == "board") {
+      boardToBoard(space, row, col);
+    }
+    
+  };
 
   return (
     <main>
