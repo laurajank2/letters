@@ -3,7 +3,7 @@
 import React from 'react';
 import { GridBase, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGlobalContext, useSelectedTileContext } from '../lib/LevelContext';
+import { useGlobalContext, useRackContext, useSelectedTileContext } from '../lib/LevelContext';
 
 export default function Rack ({grid}:{grid:GridBase})  {
   const cells = new Array(grid.cells).fill(0);
@@ -12,6 +12,8 @@ export default function Rack ({grid}:{grid:GridBase})  {
   //selected tile change
   const { tile, setTile } = useSelectedTileContext()
 
+  const {rack, setRack} = useRackContext()
+
   const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
 
     const tile : HTMLLIElement = (e.target as HTMLLIElement);
@@ -19,7 +21,8 @@ export default function Rack ({grid}:{grid:GridBase})  {
     var newTile: Tile = {
         letter: tile.textContent,
         row: row,
-        col: col
+        col: col,
+        html: tile
     }
     
 
@@ -38,7 +41,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
       {rows.map((row, indexRow) => (
         <ul className="row" key={indexRow}>
           {cells.map((cell, indexCell) => (
-            <li key={indexCell} className="tile" onClick={(e)=> handleClick(e, indexRow, indexCell)} >{`${indexCell}`}</li>
+            <li key={indexCell} className="tile" onClick={(e)=> handleClick(e, indexRow, indexCell)} >{`${rack[indexCell]}`}</li>
           ))}
         </ul>
       ))}

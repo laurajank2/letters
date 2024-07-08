@@ -14,6 +14,7 @@ export type Tile = {
     letter: string | null,
     row: number,
     col: number
+    html: HTMLLIElement | null
 }
 
 export type TileContextContent = {
@@ -21,8 +22,13 @@ export type TileContextContent = {
     setTile: (Tile: Tile) => void;
 };
 
+export type RackContextContent = {
+    rack: string[];
+    setRack: (rack: string[]) => void;
+};
+
 //sample of changeable context
 export type GlobalContent = {
     copy: string
     setCopy:(c: string) => void
-  }
+}

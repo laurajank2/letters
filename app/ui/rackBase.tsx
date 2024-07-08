@@ -4,15 +4,18 @@ import React, { useEffect, useState } from "react";
 import "./styles.css";
 import Rack from "./rack";
 import { useContext } from "react";
-import { useGlobalContext } from "../lib/LevelContext";
+import { useGlobalContext, useRackContext } from "../lib/LevelContext";
 
 export default function RackBase() {
+
+  const {rack, setRack} = useRackContext()
+
   type GridBase = {
       cells: number,
       rows: number
   };
   const rackBase : GridBase = {
-    cells: 9,
+    cells: rack.length,
     rows: 1
   };
 

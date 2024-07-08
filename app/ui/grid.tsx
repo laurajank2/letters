@@ -4,13 +4,13 @@ import React from 'react';
 import CSS from "csstype";
 import { GridBase, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGridFillContext, useSelectedTileContext } from '../lib/LevelContext';
-useGridFillContext
+import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack } from '../lib/LevelContext';
 
 export default function Grid ({grid}:{grid:GridBase})  {
   const cells = new Array(grid.cells).fill(0);
   const rows = new Array(grid.rows).fill(0);
 
+  const {rack, setRack} = useRackContext()
   const { fill, setFill } = useGridFillContext()
   const gridStatus:Array<Array<string>> = fill;
 
@@ -60,6 +60,26 @@ const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: numb
   space.textContent = tile.letter ? tile.letter : " "
 
   fill[row][col] = tile.letter ? tile.letter : " "
+
+  if (tile.html?.classList.contains('selected')) {
+    tile.html?.classList.remove('selected');
+    const newRack = removeFromRack(tile.letter? tile.letter: "", rack);
+    setRack(newRack);
+
+  } else {
+    tile.html?.classList.add('selected');
+  }
+  
+  var neutralTile: Tile = {
+    letter: " ",
+    row: -1,
+    col: -1,
+    html: null
+  }
+
+  setTile(neutralTile);
+
+  
 
 };
 
