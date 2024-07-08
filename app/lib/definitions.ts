@@ -14,7 +14,7 @@ export type Tile = {
     letter: string | null,
     row: number,
     col: number
-    html: HTMLLIElement | null
+    html: HTMLLIElement,
     from: string
 }
 
@@ -27,6 +27,13 @@ export type RackContextContent = {
     rack: string[];
     setRack: (rack: string[]) => void;
 };
+
+
+//sample of changeable context
+export type AdvertContent = {
+    advert: string
+    setAdvert:(c: string) => void
+}
 
 //sample of changeable context
 export type GlobalContent = {

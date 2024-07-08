@@ -4,19 +4,17 @@ import React from 'react';
 import CSS from "csstype";
 import { GridBase, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack } from '../lib/LevelContext';
+import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack, useAdvertContext } from '../lib/LevelContext';
 
 export default function Grid ({grid}:{grid:GridBase})  {
   const cells = new Array(grid.cells).fill(0);
   const rows = new Array(grid.rows).fill(0);
 
-  const {rack, setRack} = useRackContext()
-  const { fill, setFill } = useGridFillContext()
+  const {rack, setRack} = useRackContext();
+  const { fill, setFill } = useGridFillContext();
   const gridStatus:Array<Array<string>> = fill;
 
-  
-
-  console.log(gridStatus)
+  const {advert, setAdvert} = useAdvertContext();
 
   const tripleWordStyle: CSS.Properties = {
     backgroundColor: "rgb(150, 227, 170)"
@@ -58,7 +56,35 @@ export default function Grid ({grid}:{grid:GridBase})  {
 //selected tile change
 const { tile, setTile } = useSelectedTileContext()
 
+const checkValidity = (space:  HTMLLIElement, row: number, col: number) => {
+  if (rack.length == 9) {
+    if (row != 4 || col != 4) {
+      const newAdvert = "Place first tile in the center of the board"
+      setAdvert(newAdvert);
+      return false;
+    } else {
+      const newAdvert = "Make words!"
+      setAdvert(newAdvert);
+      return true;
+    }
+  } else {
+    if (fill[row+1][col] == " " && fill[row-1][col] == " " && fill[row][col+1] == " " && fill[row][col-1] == " ") {
+      const newAdvert = "Place tile next to one on the board"
+      setAdvert(newAdvert);
+      return false;
+    } else {
+      const newAdvert = "Make words!"
+      setAdvert(newAdvert);
+      return true;
+    }
+  }
+}
+
 const putTileOnBoardFromRack = (space:  HTMLLIElement, row: number, col: number) => {
+
+  if (!checkValidity(space, row, col)) {
+    return
+  }
   
   var newSelectedTile: Tile = {
     letter: space.textContent,
@@ -68,9 +94,11 @@ const putTileOnBoardFromRack = (space:  HTMLLIElement, row: number, col: number)
     from: (space.textContent == " ") ? "start" : "board"
   }
   //set space content to the tile's letter
-  space.textContent = tile.letter ? tile.letter : " "
+  space.textContent = tile.letter ? tile.letter : " ";
   //set the fill grid to the tile's letter
-  fill[row][col] = tile.letter ? tile.letter : " "
+  fill[row][col] = tile.letter ? tile.letter : " ";
+  const newFill = fill;
+  setFill(newFill);
   
   //remove the tile from rack
   if (tile.from == "rack") {
@@ -117,18 +145,22 @@ const boardToBoard =  (space:  HTMLLIElement, row: number, col: number) => {
   fill[row][col] = tile.letter ? tile.letter : " "
 
 
+
   space.textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
 
   fill[tile.row][tile.col] = newSelectedTile.letter ? newSelectedTile.letter : " "
 
+  const dummyLi: HTMLLIElement = document.createElement('li')
   var neutralTile: Tile = {
     letter: " ",
     row: -1,
     col: -1,
-    html: null,
+    html: dummyLi,
     from: "start"
   }
 
+  const newFill = fill;
+  setFill(newFill);
   setTile(neutralTile);
 }
 

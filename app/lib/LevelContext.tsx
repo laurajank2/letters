@@ -1,6 +1,7 @@
 import { create } from 'domain';
 import { createContext, useState, useContext } from 'react';
-import { GlobalContent, GridFillContent, RackContextContent, Tile, TileContextContent } from './definitions';
+import { AdvertContent, GlobalContent, GridFillContent, RackContextContent, Tile, TileContextContent } from './definitions';
+import React from 'react';
 
 //tracks spaces filled in grid
 var value = ' '
@@ -13,11 +14,12 @@ setFill: () => {},
 export const useGridFillContext = () => useContext(GridFillContext)
 
 //tracks selected tile
+const dummyLi: HTMLLIElement = document.createElement('li')
 var tile: Tile = {
     letter: " ",
     row: -1,
     col: -1,
-    html: null,
+    html: dummyLi,
     from: "start"
 }
 export const SelectedTileContext = createContext<TileContextContent>({
@@ -34,7 +36,12 @@ setRack: () => {},
 })
 export const useRackContext = () => useContext(RackContext)
 
-
+//sample create context
+export const AdvertContext = createContext<AdvertContent>({
+advert: 'Make Words!', // set a default value
+setAdvert: () => {},
+})
+export const useAdvertContext = () => useContext(AdvertContext)
 
 //sample create context
 export const MyGlobalContext = createContext<GlobalContent>({

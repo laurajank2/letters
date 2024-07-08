@@ -3,7 +3,7 @@
 import React, {Component, useState} from 'react';
 import { GridBase, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGlobalContext, useRackContext, useSelectedTileContext } from '../lib/LevelContext';
+import { useGlobalContext, useGridFillContext, useRackContext, useSelectedTileContext } from '../lib/LevelContext';
 
 
 export default function Rack ({grid}:{grid:GridBase})  {
@@ -15,28 +15,31 @@ export default function Rack ({grid}:{grid:GridBase})  {
   const { tile, setTile } = useSelectedTileContext()
 
   const {rack, setRack} = useRackContext()
+  const { fill, setFill } = useGridFillContext()
+  const gridStatus:Array<Array<string>> = fill;
 
 
 
   const handleTileClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
 
-    const tile : HTMLLIElement = (e.target as HTMLLIElement);
+    const clickedTile : HTMLLIElement = (e.target as HTMLLIElement);
 
     var newTile: Tile = {
-        letter: tile.textContent,
+        letter: clickedTile.textContent,
         row: row,
         col: col,
-        html: tile,
+        html: clickedTile,
         from: "rack"
     }
     
 
     setTile(newTile)
 
-    if (tile.classList.contains('selected')) {
-      tile.classList.remove('selected');
+    if (clickedTile.classList.contains('selected')) {
+      clickedTile.classList.remove('selected');
     } else {
-      tile.classList.add('selected');
+      tile.html.classList.remove('selected');
+      clickedTile.classList.add('selected');
     }
   };
 
@@ -48,15 +51,20 @@ export default function Rack ({grid}:{grid:GridBase})  {
         setRack(newRack);
         tile.html?.classList.remove('selected');
 
+        const dummyLi: HTMLLIElement = document.createElement('li')
         var newSelectedTile: Tile = {
             letter: " ",
             row: -1,
             col: -1,
-            html: null,
+            html: dummyLi,
             from: "start"
         }
     
         tile.html?.classList.remove('selected');
+        tile.html.textContent = " ";
+        fill[tile.row][tile.col] = " ";
+        const newFill = fill;
+        setFill(newFill);
         setTile(newSelectedTile);
 
     }
