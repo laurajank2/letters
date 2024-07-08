@@ -22,7 +22,8 @@ export default function Rack ({grid}:{grid:GridBase})  {
         letter: tile.textContent,
         row: row,
         col: col,
-        html: tile
+        html: tile,
+        from: "rack"
     }
     
 

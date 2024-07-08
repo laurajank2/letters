@@ -18,7 +18,8 @@ export default function Gameplay() {
         letter: " ",
         row: -1,
         col: -1,
-        html: null
+        html: null,
+        from: "start"
     };
     const [tile, setTile] = useState<Tile>(tileStart)
 

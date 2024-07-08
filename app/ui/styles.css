@@ -73,6 +73,7 @@
   .rack-base {
     margin-top: 5vh;
     padding-bottom: 5px;
+    min-width: 60px;
     border-bottom: solid;
   }
 
@@ -82,7 +83,7 @@
 
   
   .space.selected {
-    background-color: red;
+    background-color: red !important;
   }
 
   .tile.selected {

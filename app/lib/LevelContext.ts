@@ -17,7 +17,8 @@ var tile: Tile = {
     letter: " ",
     row: -1,
     col: -1,
-    html: null
+    html: null,
+    from: "start"
 }
 export const SelectedTileContext = createContext<TileContextContent>({
 tile: tile, // set a default value

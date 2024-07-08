@@ -15,6 +15,7 @@ export type Tile = {
     row: number,
     col: number
     html: HTMLLIElement | null
+    from: string
 }
 
 export type TileContextContent = {
