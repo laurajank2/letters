@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import CSS from "csstype";
-import { GridBase, Tile } from '../lib/definitions';
+import { GridBase, JSONValue, Tile } from '../lib/definitions';
 import { useContext } from 'react';
 import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack, useAdvertContext } from '../lib/LevelContext';
 import axios from 'axios';
@@ -16,6 +16,9 @@ export default function Grid ({grid}:{grid:GridBase})  {
   const gridStatus:Array<Array<string>> = fill;
 
   const {advert, setAdvert} = useAdvertContext();
+
+  const dummyJson: JSONValue = null;
+  const [json, setJson] = useState(dummyJson)
 
   const tripleWordStyle: CSS.Properties = {
     backgroundColor: "rgb(150, 227, 170)"
@@ -57,16 +60,16 @@ export default function Grid ({grid}:{grid:GridBase})  {
   //selected tile change
   const { tile, setTile } = useSelectedTileContext()
 
-  const checkIsWord = (word: string) => {
-    let wordData = null;
-    axios
-        .get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
-        .then(data => wordData=data)
-        .catch(error => console.log(error));
-    return (wordData === null) ? false : true;
+  const getWordInfo = async (word: string): Promise<JSONValue> => {
+    try {
+      const { data } = await axios.get<JSONValue>(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+      return data
+    } catch (error) {
+      return "error"
+    }
   }
 
-  const checkWordValidity = () => {
+  const checkWordValidity = async () => {
     console.log("fill: " + fill)
     let toCheck: Array<string> = [];
     let colWord = "";
@@ -78,7 +81,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
           if (fill[i][j] != " ") {
             colWord = colWord + fill[i][j];
           }
-          toCheck.push(colWord)
+          if (colWord.length > 1 || rack.length == 8) {
+            toCheck.push(colWord)
+          }
+          
           colWord = ""
         } else if (fill[i][j] != " ") {
           colWord = colWord + fill[i][j];
@@ -89,7 +95,9 @@ export default function Grid ({grid}:{grid:GridBase})  {
           if (fill[j][i] != " ") {
             rowWord = rowWord + fill[j][i];
           }
-          toCheck.push(rowWord)
+          if (rowWord.length > 1 || rack.length == 8) {
+            toCheck.push(colWord)
+          }
           rowWord = ""
         } else if (fill[j][i] != " ") {
           rowWord = rowWord + fill[j][i];
@@ -98,18 +106,24 @@ export default function Grid ({grid}:{grid:GridBase})  {
     }
 
     console.log("words to check: " + toCheck);
-    toCheck.forEach(word => {
-      if (!checkIsWord(word)) {
-        return false
+    for (let i = 0; i < toCheck.length; i++) {
+      let word: string = toCheck[i]
+      console.log(" word is: " + word)
+      const wordInfo = await getWordInfo(word);
+      if (wordInfo == "error") {
+        console.log("was an error: " + wordInfo)
+        return false;
       }
-    });
+    };
+    console.log("all words work")
     return true
   }
 
+
   const checkBoardValidity = (space:  HTMLLIElement, row: number, col: number) => {
-    if (rack.length == 9) {
+    if (rack.length == 9 || fill[4][4]==" ") {
       if (row != 4 || col != 4) {
-        const newAdvert = "Place first tile in the center of the board"
+        const newAdvert = "Place tile in the center of the board"
         setAdvert(newAdvert);
         return false;
       } else {
@@ -130,7 +144,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
     }
   }
 
-  const putTileOnBoardFromRack = (space:  HTMLLIElement, row: number, col: number) => {
+  const putTileOnBoardFromRack = async (space:  HTMLLIElement, row: number, col: number) => {
 
     
     if (!checkBoardValidity(space, row, col)) {
@@ -164,9 +178,12 @@ export default function Grid ({grid}:{grid:GridBase})  {
     
     setTile(newSelectedTile);
 
-    if (!checkWordValidity()) {
+    const validWords: boolean = await checkWordValidity()
+    if (!validWords) {
       const newAdvert = "Something on your board isn't a word. Keep trying!"
       setAdvert(newAdvert);
+    } else {
+      checkBoardValidity(space, row, col);
     }
 
   }
@@ -254,6 +271,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
 };
 
 
+
+function setState(arg0: null): { json: any; setJson: any; } {
+  throw new Error('Function not implemented.');
+}
 // else if (tile.from == "board") {
 //   //set space content to the tile's letter
 //  space.textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
