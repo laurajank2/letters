@@ -68,7 +68,7 @@ const checkValidity = (space:  HTMLLIElement, row: number, col: number) => {
       return true;
     }
   } else {
-    if (fill[row+1][col] == " " && fill[row-1][col] == " " && fill[row][col+1] == " " && fill[row][col-1] == " ") {
+    if ((fill[row+1] === undefined || fill[row+1][col] == " ") && (fill[row-1] === undefined || fill[row-1][col] == " ") && (fill[row][col+1] === undefined|| fill[row][col+1] == " ") && (fill[row][col-1] === undefined || fill[row][col-1] == " ")) {
       const newAdvert = "Place tile next to one on the board"
       setAdvert(newAdvert);
       return false;
@@ -82,6 +82,7 @@ const checkValidity = (space:  HTMLLIElement, row: number, col: number) => {
 
 const putTileOnBoardFromRack = (space:  HTMLLIElement, row: number, col: number) => {
 
+  
   if (!checkValidity(space, row, col)) {
     return
   }
