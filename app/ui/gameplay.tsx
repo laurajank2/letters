@@ -10,7 +10,7 @@ import { Tile } from "../lib/definitions";
 
 export default function Gameplay() {
 
-    var value = ' '
+    var value = " "
     var spacesFilledVar = [...Array(9)].map(e => Array(9).fill(value)); 
     const [fill, setFill] = useState<Array<Array<string>>>(spacesFilledVar);
 

@@ -1,9 +1,9 @@
 'use client';
 
 import React, {Component, useState} from 'react';
-import { GridBase, Tile } from '../lib/definitions';
+import { GridBase, letterPointsDictionary, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGlobalContext, useGridFillContext, useRackContext, useSelectedTileContext } from '../lib/LevelContext';
+import { letterPointsContext, useGlobalContext, useGridFillContext, useRackContext, useSelectedTileContext } from '../lib/LevelContext';
 
 
 export default function Rack ({grid}:{grid:GridBase})  {
@@ -18,14 +18,21 @@ export default function Rack ({grid}:{grid:GridBase})  {
   const { fill, setFill } = useGridFillContext()
   const gridStatus:Array<Array<string>> = fill;
 
+  const letterPoints = useContext(letterPointsContext);
 
 
   const handleTileClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
 
+    let target = (e.target as HTMLElement)
+
+    if (target.className == "tile-score") {
+        target = target.parentNode ? (target.parentNode as HTMLLIElement) : target
+    }
+
     const clickedTile : HTMLLIElement = (e.target as HTMLLIElement);
 
     var newTile: Tile = {
-        letter: clickedTile.textContent,
+        letter: clickedTile.textContent ? clickedTile.textContent[0] : " " ,
         row: row,
         col: col,
         html: clickedTile,
@@ -68,13 +75,19 @@ export default function Rack ({grid}:{grid:GridBase})  {
     }
   }
 
+  console.log("rack " + rack)
   return (
     <main>
 
       {rows.map((row, indexRow) => (
         <ul className="row" key={indexRow}>
           {cells.map((cell, indexCell) => (
-            <li key={indexCell} className="tile" onClick={(e)=> handleTileClick(e, indexRow, indexCell)} >{`${rack[indexCell]}`}</li>
+            <li key={indexCell} className="tile" onClick={(e)=> handleTileClick(e, indexRow, indexCell)} >
+                {`${rack[indexCell]}`}
+                <p className='tile-score' >{`${letterPoints[rack[indexCell] as keyof letterPointsDictionary]}`}</p>
+               
+                
+            </li>
           ))}
         </ul>
       ))}
@@ -82,4 +95,3 @@ export default function Rack ({grid}:{grid:GridBase})  {
     </main>
   );
 };
-

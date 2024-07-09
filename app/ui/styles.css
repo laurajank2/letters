@@ -56,6 +56,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     width: 50px;
     min-width: 50px;
     height: 50px;
@@ -69,7 +70,7 @@
     font-size: 25px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    flex-direction: column;
     width: 50px;
     min-width: 50px;
     height: 50px;
@@ -77,6 +78,30 @@
     background-color: tan;
     margin: 5px;
     border: solid;
+  }
+
+  .tile-letter {
+    margin:0px;
+    margin-top:10px;
+  }
+
+  .tile-score {
+    margin:0px;
+    margin-top:-3px;
+    margin-left:30px;
+    font-size: 15px;
+  }
+
+  .space-letter {
+    margin:0px;
+    margin-top:10px;
+  }
+
+  .space-score {
+    margin:0px;
+    margin-top:-3px;
+    margin-left:30px;
+    font-size: 15px;
   }
 
   .rack-base {
@@ -104,5 +129,5 @@
 
   .advert {
     margin: 5%;
-    
+
   }

@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import CSS from "csstype";
-import { GridBase, JSONValue, Tile } from '../lib/definitions';
+import { GridBase, JSONValue, letterPointsDictionary, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack, useAdvertContext } from '../lib/LevelContext';
+import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack, useAdvertContext, letterPointsContext } from '../lib/LevelContext';
 import axios from 'axios';
 
 export default function Grid ({grid}:{grid:GridBase})  {
@@ -19,6 +19,8 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
   const dummyJson: JSONValue = null;
   const [json, setJson] = useState(dummyJson)
+
+  const letterPoints = useContext(letterPointsContext);
 
   const tripleWordStyle: CSS.Properties = {
     backgroundColor: "rgb(150, 227, 170)"
@@ -145,21 +147,24 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
   const putTileOnBoardFromRack = async (space:  HTMLLIElement, row: number, col: number) => {
 
+    const newLetter = space.getElementsByClassName("space-letter")[0].textContent;
 
     var newSelectedTile: Tile = {
-      letter: space.textContent,
+      letter: newLetter,
       row: row,
       col: col,
       html: space,
-      from: (space.textContent == " ") ? "start" : "board"
+      from: (newLetter == " ") ? "start" : "board"
     }
     //set space content to the tile's letter
-    space.textContent = tile.letter ? tile.letter : " ";
+    space.getElementsByClassName("space-letter")[0].textContent = tile.letter ? tile.letter : " ";
     //set the fill grid to the tile's letter
     fill[row][col] = tile.letter ? tile.letter : " ";
     const newFill = fill;
     setFill(newFill);
 
+
+    console.log("space.from: " + newSelectedTile.from)
     //give old tile back to rack if necessary
     if (newSelectedTile.from == "board" && newSelectedTile.letter != null) {
       rack.push(newSelectedTile.letter);
@@ -173,6 +178,9 @@ export default function Grid ({grid}:{grid:GridBase})  {
         tile.html?.classList.remove('selected');
         const newRack = removeFromRack(tile.letter? tile.letter: "", rack);
         setRack(newRack);
+        console.log(
+          'tile put on board then rack: ' + rack
+          )
       }
     }
     
@@ -189,12 +197,15 @@ export default function Grid ({grid}:{grid:GridBase})  {
   }
 
   const takeTileFromBoard = async (space:  HTMLLIElement, row: number, col: number) => {
+
+    const newLetter = space.getElementsByClassName("space-letter")[0].textContent;
+
     var newSelectedTile: Tile = {
-      letter: space.textContent,
+      letter: newLetter,
       row: row,
       col: col,
       html: space,
-      from: (space.textContent == " ") ? "start" : "board"
+      from: (newLetter == " ") ? "start" : "board"
     }
 
     tile.html?.classList.remove('selected');
@@ -212,24 +223,32 @@ export default function Grid ({grid}:{grid:GridBase})  {
   }
 
   const boardToBoard =  async (space:  HTMLLIElement, row: number, col: number) => {
+    
+    console.log("btb: " + space.className)
+    let newLetter: string = " ";
+    if (space.getElementsByClassName("space-letter")[0] != undefined) {
+      newLetter = space.getElementsByClassName("space-letter")[0].textContent!;
+    }
+    
+
     var newSelectedTile: Tile = {
-      letter: space.textContent,
+      letter: newLetter,
       row: row,
       col: col,
       html: space,
-      from: (space.textContent == " ") ? "start" : "board"
+      from: (newLetter == " ") ? "start" : "board"
     }
 
     tile.html?.classList.remove('selected');
 
     //set space content to the tile's letter
-    space.textContent = tile.letter ? tile.letter : " "
+    space.getElementsByClassName("space-letter")[0].textContent = tile.letter ? tile.letter : " "
     //set the fill grid to the tile's letter
     fill[row][col] = tile.letter ? tile.letter : " "
 
 
 
-    space.textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
+    tile.html.getElementsByClassName("space-letter")[0].textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
 
     fill[tile.row][tile.col] = newSelectedTile.letter ? newSelectedTile.letter : " "
 
@@ -265,9 +284,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
     }
   }
 
-  const handleClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
+  const handleClick = (e:  React.MouseEvent<HTMLElement>, row: number, col: number) => {
 
-    const space : HTMLLIElement = (e.target as HTMLLIElement);
+    const target = getRealSpace(e)
+    const space : HTMLLIElement = (target as HTMLLIElement);
 
 
     if (tile.from == "rack") {
@@ -280,6 +300,25 @@ export default function Grid ({grid}:{grid:GridBase})  {
     
   };
 
+  const checkGridStatus = (status: string) => {
+    console.log("status is: " + status)
+    if(status == " ") {
+      return " "
+    } else {
+      return letterPoints[status as keyof letterPointsDictionary]
+    }
+  }
+
+  const getRealSpace = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    let target = (e.target as HTMLElement)
+
+    if (target.className == "space-score"  || target.className == "space-letter") {
+        target = target.parentNode ? (target.parentNode as HTMLLIElement) : target
+    }
+
+    return target
+  }
+
   //always check words when grid renders
   checkWords();
 
@@ -290,7 +329,11 @@ export default function Grid ({grid}:{grid:GridBase})  {
         
         <ul className="row" key={indexRow}>
           {cells.map((cell, indexCol) => (
-            <li key={indexCol} id={`${indexCol}, ${indexRow}`} className="space" style={chooseStyle([indexCol, indexRow])} onClick={(e)=> handleClick(e, indexRow, indexCol)}>{`${gridStatus[indexRow][indexCol]}`}</li>
+            <li key={indexCol} id={`${indexCol}, ${indexRow}`} className="space" style={chooseStyle([indexCol, indexRow])} onClick={(e)=> handleClick(e, indexRow, indexCol)}>
+              <p className='space-letter'>{`${gridStatus[indexRow][indexCol]}`}</p>
+              <p className='space-score'>{`${checkGridStatus(gridStatus[indexRow][indexCol])}`}</p>
+                
+            </li>
           ))}
         </ul>
       ))}
