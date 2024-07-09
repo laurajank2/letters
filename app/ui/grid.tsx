@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CSS from "csstype";
 import { GridBase, JSONValue, Tile } from '../lib/definitions';
 import { useContext } from 'react';
@@ -43,6 +43,8 @@ export default function Grid ({grid}:{grid:GridBase})  {
   const selectedStyle: CSS.Properties = {
     backgroundColor: "blue"
   }
+
+  
 
   const chooseStyle = (indices: Array<number>): CSS.Properties => {
     if ((indices[0] == 0 && indices[1] == 0) || (indices[0] == 0 && indices[1] == 8) || (indices[0] == 8 && indices[1] == 0) || (indices[0] == 8 && indices[1] == 8)) {
@@ -120,28 +122,25 @@ export default function Grid ({grid}:{grid:GridBase})  {
   }
 
 
-  const checkBoardValidity = (space:  HTMLLIElement, row: number, col: number) => {
-    if (rack.length == 9 || fill[4][4]==" ") {
-      if (row != 4 || col != 4) {
-        const newAdvert = "Place tile in the center of the board"
-        setAdvert(newAdvert);
-        return false;
-      } else {
-        const newAdvert = "Make words!"
-        setAdvert(newAdvert);
-        return true;
-      }
-    } else {
-      if ((fill[row+1] === undefined || fill[row+1][col] == " ") && (fill[row-1] === undefined || fill[row-1][col] == " ") && (fill[row][col+1] === undefined|| fill[row][col+1] == " ") && (fill[row][col-1] === undefined || fill[row][col-1] == " ")) {
-        const newAdvert = "Place tile next to one on the board"
-        setAdvert(newAdvert);
-        return false;
-      } else {
-        const newAdvert = "Make words!"
-        setAdvert(newAdvert);
-        return true;
+  const checkBoardValidity = () => {
+    if (rack.length == 9 ) {
+      const newAdvert = "Place tile in the center of the board"
+      setAdvert(newAdvert);
+    }
+    for(let i = 0; i < fill.length; i ++) {
+      for (let j = 0; j < fill[i].length; j ++) {
+        if (fill[i][j] != " ") {
+          if ((fill[i+1] === undefined || fill[i+1][j] == " ") && (fill[i-1] === undefined || fill[i-1][j] == " ") && (fill[i][j+1] === undefined|| fill[i][j+1] == " ") && (fill[i][j-1] === undefined || fill[i][j-1] == " ")) {
+            const newAdvert = "Place tile next to one on the board"
+            setAdvert(newAdvert);
+            return false;
+          }
+        }
       }
     }
+    const newAdvert = "Make words!"
+    setAdvert(newAdvert);
+    return true;
   }
 
   const putTileOnBoardFromRack = async (space:  HTMLLIElement, row: number, col: number) => {
@@ -184,7 +183,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
       const newAdvert = "Something on your board isn't a word. Keep trying!"
       setAdvert(newAdvert);
     } else {
-      checkBoardValidity(space, row, col);
+      checkBoardValidity();
     }
 
   }
@@ -207,7 +206,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
       const newAdvert = "Something on your board isn't a word. Keep trying!"
       setAdvert(newAdvert);
     } else {
-      checkBoardValidity(space, row, col);
+      checkBoardValidity();
     }
     
   }
@@ -252,7 +251,17 @@ export default function Grid ({grid}:{grid:GridBase})  {
       const newAdvert = "Something on your board isn't a word. Keep trying!"
       setAdvert(newAdvert);
     } else {
-      checkBoardValidity(space, row, col);
+      checkBoardValidity();
+    }
+  }
+
+  const checkWords = async () => {
+    const validWords: boolean = await checkWordValidity()
+    if (!validWords) {
+      const newAdvert = "Something on your board isn't a word. Keep trying!"
+      setAdvert(newAdvert);
+    } else {
+      checkBoardValidity();
     }
   }
 
@@ -270,6 +279,9 @@ export default function Grid ({grid}:{grid:GridBase})  {
     }
     
   };
+
+  //always check words when grid renders
+  checkWords();
 
   return (
     <main>

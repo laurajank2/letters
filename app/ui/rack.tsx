@@ -9,7 +9,7 @@ import { useGlobalContext, useGridFillContext, useRackContext, useSelectedTileCo
 export default function Rack ({grid}:{grid:GridBase})  {
   const cells = new Array(grid.cells).fill(0);
   const rows = new Array(grid.rows).fill(0);
-  console.log("rerendered")
+  console.log("rack rerendered")
 
   //selected tile change
   const { tile, setTile } = useSelectedTileContext()
@@ -31,7 +31,6 @@ export default function Rack ({grid}:{grid:GridBase})  {
         html: clickedTile,
         from: "rack"
     }
-    
 
     setTile(newTile)
 
@@ -45,7 +44,6 @@ export default function Rack ({grid}:{grid:GridBase})  {
 
   const handleTrayClick = () => {
     if (tile.from == "board" && tile.letter != " " && tile.letter != null) {
-        console.log("old rack: " + rack)
         let newRack = rack;
         newRack.push(tile.letter);
         setRack(newRack);
