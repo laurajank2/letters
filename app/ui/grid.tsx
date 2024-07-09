@@ -125,9 +125,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
 
   const checkBoardValidity = () => {
-    if (rack.length == 9 ) {
+    if (rack.length == 9  || fill[4][4] == " ") {
       const newAdvert = "Place tile in the center of the board"
       setAdvert(newAdvert);
+      return false
     }
     for(let i = 0; i < fill.length; i ++) {
       for (let j = 0; j < fill[i].length; j ++) {
@@ -147,8 +148,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
   const putTileOnBoardFromRack = async (space:  HTMLLIElement, row: number, col: number) => {
 
-    const newLetter = space.getElementsByClassName("space-letter")[0].textContent;
-
+    let newLetter: string = " ";
+    if (space.getElementsByClassName("space-letter")[0] != undefined) {
+      newLetter = space.getElementsByClassName("space-letter")[0].textContent!;
+    }
     var newSelectedTile: Tile = {
       letter: newLetter,
       row: row,
@@ -198,7 +201,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
   const takeTileFromBoard = async (space:  HTMLLIElement, row: number, col: number) => {
 
-    const newLetter = space.getElementsByClassName("space-letter")[0].textContent;
+    let newLetter: string = " ";
+    if (space.getElementsByClassName("space-letter")[0] != undefined) {
+      newLetter = space.getElementsByClassName("space-letter")[0].textContent!;
+    }
 
     var newSelectedTile: Tile = {
       letter: newLetter,

@@ -25,11 +25,11 @@ export default function Rack ({grid}:{grid:GridBase})  {
 
     let target = (e.target as HTMLElement)
 
-    if (target.className == "tile-score") {
+    if (target.className == "tile-score" || target.className == "tile-letter") {
         target = target.parentNode ? (target.parentNode as HTMLLIElement) : target
     }
 
-    const clickedTile : HTMLLIElement = (e.target as HTMLLIElement);
+    const clickedTile : HTMLLIElement = (target as HTMLLIElement);
 
     var newTile: Tile = {
         letter: clickedTile.textContent ? clickedTile.textContent[0] : " " ,
@@ -66,7 +66,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
         }
     
         tile.html?.classList.remove('selected');
-        tile.html.textContent = " ";
+        tile.html.getElementsByClassName("space-letter")[0].textContent = " ";
         fill[tile.row][tile.col] = " ";
         const newFill = fill;
         setFill(newFill);
@@ -83,7 +83,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
         <ul className="row" key={indexRow}>
           {cells.map((cell, indexCell) => (
             <li key={indexCell} className="tile" onClick={(e)=> handleTileClick(e, indexRow, indexCell)} >
-                {`${rack[indexCell]}`}
+                <p className='tile-letter' >{`${rack[indexCell]}`}</p>
                 <p className='tile-score' >{`${letterPoints[rack[indexCell] as keyof letterPointsDictionary]}`}</p>
                
                 
