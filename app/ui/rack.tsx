@@ -9,7 +9,6 @@ import { letterPointsContext, useGlobalContext, useGridFillContext, useRackConte
 export default function Rack ({grid}:{grid:GridBase})  {
   const cells = new Array(grid.cells).fill(0);
   const rows = new Array(grid.rows).fill(0);
-  console.log("rack rerendered")
 
   //selected tile change
   const { tile, setTile } = useSelectedTileContext()
@@ -75,7 +74,6 @@ export default function Rack ({grid}:{grid:GridBase})  {
     }
   }
 
-  console.log("rack " + rack)
   return (
     <main>
 

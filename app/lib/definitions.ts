@@ -40,6 +40,11 @@ export type AdvertContent = {
     setAdvert:(c: string) => void
 }
 
+export type PointContent = {
+    point: number
+    setPoint:(c: number) => void
+}
+
 //sample of changeable context
 export type GlobalContent = {
     copy: string
@@ -82,4 +87,11 @@ export type letterPointsDictionary = {
     X:number,
     Y:number,
     Z:number
+}
+
+export type powerDictionary = {
+    doubleLetter: Array<Array<number>>,
+    tripleLetter: Array<Array<number>>,
+    doubleWord: Array<Array<number>>,
+    tripleWord: Array<Array<number>>
 }

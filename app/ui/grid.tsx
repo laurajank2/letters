@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import CSS from "csstype";
 import { GridBase, JSONValue, letterPointsDictionary, Tile } from '../lib/definitions';
 import { useContext } from 'react';
-import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack, useAdvertContext, letterPointsContext } from '../lib/LevelContext';
+import { useGridFillContext, useRackContext, useSelectedTileContext, removeFromRack, useAdvertContext, letterPointsContext, powerDictionaryContext, usePointContext } from '../lib/LevelContext';
 import axios from 'axios';
 
 export default function Grid ({grid}:{grid:GridBase})  {
@@ -20,7 +20,11 @@ export default function Grid ({grid}:{grid:GridBase})  {
   const dummyJson: JSONValue = null;
   const [json, setJson] = useState(dummyJson)
 
+  const {point, setPoint} = usePointContext();
+
   const letterPoints = useContext(letterPointsContext);
+
+  const powerPlacements = useContext(powerDictionaryContext);
 
   const tripleWordStyle: CSS.Properties = {
     backgroundColor: "rgb(150, 227, 170)"
@@ -74,53 +78,159 @@ export default function Grid ({grid}:{grid:GridBase})  {
   }
 
   const checkWordValidity = async () => {
-    console.log("fill: " + fill)
     let toCheck: Array<string> = [];
+    let toScore: Array<number> = [];
     let colWord = "";
     let rowWord = "";
+    let colLetterPower = 0;
+    let rowLetterPower = 0;
+    let colWordPower = 0;
+    let rowWordPower = 0;
     for (let i = 0; i < fill.length; i++) {
       for (let j = 0; j < fill.length; j++) {
         //check column word
+        //at end of word, so time to add word to array
         if(colWord != "" && (fill[i][j] == " " || j==8)) {
           if (fill[i][j] != " ") {
+            let power = checkPowerType([i,j]);
+            console.log("power96: " + power)
+            if (power != "none") {
+              if (power == "double letter") {
+                colLetterPower += letterPoints[fill[i][j] as keyof letterPointsDictionary]
+              } else if (power == "triple letter") {
+                colLetterPower += letterPoints[fill[i][j] as keyof letterPointsDictionary]*2
+              } else if (power == "double word") {
+                colWordPower += 2
+              } else if (power == "triple word") {
+                colWordPower += 3
+              }
+            }
             colWord = colWord + fill[i][j];
           }
           if (colWord.length > 1 || rack.length == 8) {
+            toScore.push((pointCount(colWord)+colLetterPower)*(colWordPower? colWordPower: 1))
             toCheck.push(colWord)
+            colLetterPower = 0;
+            colWordPower = 0;
           }
           
           colWord = ""
         } else if (fill[i][j] != " ") {
+          let power = checkPowerType([i,j]);
+          console.log("power120: " + power)
+            if (power != "none") {
+              if (power == "double letter") {
+                colLetterPower += letterPoints[fill[i][j] as keyof letterPointsDictionary]
+              } else if (power == "triple letter") {
+                colLetterPower += letterPoints[fill[i][j] as keyof letterPointsDictionary]*2
+              } else if (power == "double word") {
+                colWordPower += 2
+              } else if (power == "triple word") {
+                colWordPower += 3
+              }
+            }
           colWord = colWord + fill[i][j];
         }
 
         //check row word
         if(rowWord != "" && (fill[j][i] == " " || i==8)) {
           if (fill[j][i] != " ") {
+            let power = checkPowerType([i,j]);
+            console.log("power139: " + power)
+            if (power != "none") {
+              if (power == "double letter") {
+                rowLetterPower += letterPoints[fill[j][i] as keyof letterPointsDictionary]
+              } else if (power == "triple letter") {
+                rowLetterPower += letterPoints[fill[j][i] as keyof letterPointsDictionary]*2
+              } else if (power == "double word") {
+                rowWordPower += 2
+              } else if (power == "triple word") {
+                rowWordPower += 3
+              }
+            }
             rowWord = rowWord + fill[j][i];
           }
           if (rowWord.length > 1 || rack.length == 8) {
+            toScore.push((pointCount(rowWord)+rowLetterPower)*(rowWordPower? rowWordPower: 1))
             toCheck.push(rowWord)
+            rowLetterPower = 0;
+            rowWordPower = 0;
           }
+          
           rowWord = ""
         } else if (fill[j][i] != " ") {
+          let power = checkPowerType([j,i]);
+          console.log("power163: " + power)
+          if (power != "none") {
+            if (power == "double letter") {
+              rowLetterPower += letterPoints[fill[j][i] as keyof letterPointsDictionary]
+            } else if (power == "triple letter") {
+              rowLetterPower += letterPoints[fill[j][i] as keyof letterPointsDictionary]*2
+            } else if (power == "double word") {
+              rowWordPower += 2
+            } else if (power == "triple word") {
+              rowWordPower += 3
+            }
+          }
           rowWord = rowWord + fill[j][i];
         }
       }
     }
 
+    
+    if (rack.length == 8) {
+      toCheck = [toCheck[0]]
+    }
     console.log("words to check: " + toCheck);
     for (let i = 0; i < toCheck.length; i++) {
       let word: string = toCheck[i]
-      console.log(" word is: " + word)
       const wordInfo = await getWordInfo(word);
       if (wordInfo == "error") {
-        console.log("was an error: " + wordInfo)
         return false;
       }
     };
-    console.log("all words work")
+
+    if (rack.length == 8) {
+      toScore = [toScore[0]]
+    }
+    console.log("toScore: " + toScore)
+    let pointTotal = 0;
+    for (let i = 0; i < toScore.length; i++) {
+      pointTotal += toScore[i]
+    }
+    setPoint(pointTotal);
     return true
+  }
+
+  const checkPowerType = (position: Array<number>) => {
+    if (checkArrayInArray(powerPlacements.doubleLetter, position)) {
+      return "double letter"
+    } else if (checkArrayInArray(powerPlacements.tripleLetter, position)) {
+      return "triple letter"
+    } else if (checkArrayInArray(powerPlacements.doubleWord, position)) {
+      return "double word"
+    } else if (checkArrayInArray(powerPlacements.tripleWord, position)) {
+      return "triple word"
+    }
+    return "none"
+  }
+
+  const checkArrayInArray = (arr1: Array<Array<number>>, arr2: Array<number>) => {
+    for (let i = 0; i < arr1.length; i++) {
+      console.log(arr1[i])
+      if (arr1[i] == arr2) {
+        return true
+      }
+    }
+    return false
+  }
+
+  const pointCount = (word: string) => {
+    let points = 0
+    for (let i = 0; i < word.length; i++) {
+      points += letterPoints[word[i] as keyof letterPointsDictionary]
+    }
+    return points
   }
 
 
@@ -146,6 +256,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
     return true;
   }
 
+  const countPoints = () => {
+
+  }
+
   const putTileOnBoardFromRack = async (space:  HTMLLIElement, row: number, col: number) => {
 
     let newLetter: string = " ";
@@ -167,7 +281,6 @@ export default function Grid ({grid}:{grid:GridBase})  {
     setFill(newFill);
 
 
-    console.log("space.from: " + newSelectedTile.from)
     //give old tile back to rack if necessary
     if (newSelectedTile.from == "board" && newSelectedTile.letter != null) {
       rack.push(newSelectedTile.letter);
@@ -181,9 +294,6 @@ export default function Grid ({grid}:{grid:GridBase})  {
         tile.html?.classList.remove('selected');
         const newRack = removeFromRack(tile.letter? tile.letter: "", rack);
         setRack(newRack);
-        console.log(
-          'tile put on board then rack: ' + rack
-          )
       }
     }
     
@@ -230,7 +340,6 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
   const boardToBoard =  async (space:  HTMLLIElement, row: number, col: number) => {
     
-    console.log("btb: " + space.className)
     let newLetter: string = " ";
     if (space.getElementsByClassName("space-letter")[0] != undefined) {
       newLetter = space.getElementsByClassName("space-letter")[0].textContent!;
@@ -307,7 +416,6 @@ export default function Grid ({grid}:{grid:GridBase})  {
   };
 
   const checkGridStatus = (status: string) => {
-    console.log("status is: " + status)
     if(status == " ") {
       return " "
     } else {
@@ -347,15 +455,3 @@ export default function Grid ({grid}:{grid:GridBase})  {
     </main>
   );
 };
-
-
-
-function setState(arg0: null): { json: any; setJson: any; } {
-  throw new Error('Function not implemented.');
-}
-// else if (tile.from == "board") {
-//   //set space content to the tile's letter
-//  space.textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
-//  //set the fill grid to the tile's letter
-//  fill[tile.row][tile.col] = newSelectedTile.letter ? newSelectedTile.letter : " "
-// }

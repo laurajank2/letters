@@ -1,6 +1,6 @@
 import { create } from 'domain';
 import { createContext, useState, useContext } from 'react';
-import { AdvertContent, GlobalContent, GridFillContent, letterPointsDictionary, RackContextContent, SubmitContent, Tile, TileContextContent } from './definitions';
+import { AdvertContent, GlobalContent, GridFillContent, letterPointsDictionary, PointContent, powerDictionary, RackContextContent, SubmitContent, Tile, TileContextContent } from './definitions';
 import React from 'react';
 
 //tracks spaces filled in grid
@@ -67,6 +67,20 @@ export const removeFromRack = (character: string, rack: Array<string>) => {
     }
     return rack
 }
+
+//sample create context
+export const PointContext = createContext<PointContent>({
+point: 0, // set a default value
+setPoint: () => {},
+})
+export const usePointContext = () => useContext(PointContext)
+
+export const powerDictionaryContext = createContext<powerDictionary>({
+    doubleLetter: [[4,4]],
+    tripleLetter: [[2,2],[2,6],[6,2],[6,6]],
+    doubleWord: [[0,4],[4,0], [4,8],[8,4]],
+    tripleWord: [[0,0],[0,8],[8,0],[8,8]]
+})
 
 export const letterPointsContext= createContext<letterPointsDictionary>({
     A:1,
