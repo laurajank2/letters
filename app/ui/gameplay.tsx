@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useState} from "react";
-import { AdvertContext, GridFillContext, PointContext, RackContext, SelectedTileContext, SubmitContext, } from "../lib/LevelContext";
+import { AdvertContext, removeFromRack, GridFillContext, PointContext, RackContext, SelectedTileContext, SubmitContext, } from "../lib/LevelContext";
 import { useContext } from "react";
 
 import GridBase from "./gridBase";
@@ -24,7 +24,23 @@ export default function Gameplay() {
     };
     const [tile, setTile] = useState<Tile>(tileStart)
 
-    var rackStart: string[] = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+    var tileBag: string[] = [ "A", "A", "A", "A", "A", "A", "A", "A", "A", 
+        "G", "G", "G", "M", "M", "S", "S", "S", "S","Y", "Y", "B", "B", "H", 
+        "H", "N", "N","N", "N", "N", "N", "T", "T", "T", "T", "T", "T", "Z",
+        "C", "C", "I", "I", "I", "I", "I", "I", "I", "I", "I", "O", "O", "O", 
+        "O", "O", "O", "O", "O", "U", "U", "U", "U", "D", "D", "D", "D", "J", 
+        "P", "P", "V", "V", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+        "E", "E", "K", "Q", "W", "W", "F", "F", "L", "L", "L", "L", "R", "R",
+        "R", "R","R", "R", "X"
+    ]
+
+    const takeTileFromBag = () => {
+        var tileIndex = Math.floor(Math.random() * tileBag.length)
+        var randomLetter = tileBag[tileIndex];
+        tileBag = removeFromRack(randomLetter, tileBag)
+        return randomLetter
+    }
+    var rackStart: string[] = [takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag()]
     const [rack, setRack] = useState<Array<string>>(rackStart)
 
     const [advert, setAdvert] = useState<string>("Make words!")
