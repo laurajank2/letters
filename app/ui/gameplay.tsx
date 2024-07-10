@@ -31,12 +31,23 @@ export default function Gameplay() {
         "O", "O", "O", "O", "O", "U", "U", "U", "U", "D", "D", "D", "D", "J", 
         "P", "P", "V", "V", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
         "E", "E", "K", "Q", "W", "W", "F", "F", "L", "L", "L", "L", "R", "R",
-        "R", "R","R", "R", "X"
+        "R", "R","R", "R", "X","S","S"
     ]
+
+    var isQ = false;
+    var isU = false;
 
     const takeTileFromBag = () => {
         var tileIndex = Math.floor(Math.random() * tileBag.length)
+        if (isQ && !isU) {
+            tileIndex = tileBag.indexOf("U")
+            isU = true
+        }
+        
         var randomLetter = tileBag[tileIndex];
+        if (randomLetter == "Q") {
+            isQ = true
+        }
         tileBag = removeFromRack(randomLetter, tileBag)
         return randomLetter
     }
