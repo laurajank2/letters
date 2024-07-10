@@ -86,6 +86,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
     let rowLetterPower = 0;
     let colWordPower = 0;
     let rowWordPower = 0;
+    let singleLetterWord = false;
     for (let i = 0; i < fill.length; i++) {
       for (let j = 0; j < fill.length; j++) {
         //check column word
@@ -93,8 +94,8 @@ export default function Grid ({grid}:{grid:GridBase})  {
         if(colWord != "" && (fill[i][j] == " " || j==8)) {
           if (fill[i][j] != " ") {
             let power = checkPowerType([i,j]);
-            console.log("power96: " + power)
             if (power != "none") {
+              console.log("power: " + power + " for " + fill[i][j])
               if (power == "double letter") {
                 colLetterPower += letterPoints[fill[i][j] as keyof letterPointsDictionary]
               } else if (power == "triple letter") {
@@ -107,18 +108,21 @@ export default function Grid ({grid}:{grid:GridBase})  {
             }
             colWord = colWord + fill[i][j];
           }
-          if (colWord.length > 1 || rack.length == 8) {
+          if ((!singleLetterWord && rack.length == 8) || colWord.length > 1) {
+            if (colWord.length == 1) {
+              singleLetterWord = true
+            }
             toScore.push((pointCount(colWord)+colLetterPower)*(colWordPower? colWordPower: 1))
             toCheck.push(colWord)
-            colLetterPower = 0;
-            colWordPower = 0;
+            
           }
-          
+          colLetterPower = 0;
+          colWordPower = 0;
           colWord = ""
         } else if (fill[i][j] != " ") {
           let power = checkPowerType([i,j]);
-          console.log("power120: " + power)
             if (power != "none") {
+              console.log("power: " + power + " for " + fill[i][j])
               if (power == "double letter") {
                 colLetterPower += letterPoints[fill[i][j] as keyof letterPointsDictionary]
               } else if (power == "triple letter") {
@@ -135,9 +139,9 @@ export default function Grid ({grid}:{grid:GridBase})  {
         //check row word
         if(rowWord != "" && (fill[j][i] == " " || i==8)) {
           if (fill[j][i] != " ") {
-            let power = checkPowerType([i,j]);
-            console.log("power139: " + power)
+            let power = checkPowerType([j,i]);
             if (power != "none") {
+              console.log("power: " + power + " for " + fill[j][i])
               if (power == "double letter") {
                 rowLetterPower += letterPoints[fill[j][i] as keyof letterPointsDictionary]
               } else if (power == "triple letter") {
@@ -150,18 +154,24 @@ export default function Grid ({grid}:{grid:GridBase})  {
             }
             rowWord = rowWord + fill[j][i];
           }
-          if (rowWord.length > 1 || rack.length == 8) {
+          if ((!singleLetterWord && rack.length == 8) || rowWord.length > 1) {
+            if (rowWord.length == 1) {
+              singleLetterWord = true
+            }
             toScore.push((pointCount(rowWord)+rowLetterPower)*(rowWordPower? rowWordPower: 1))
             toCheck.push(rowWord)
-            rowLetterPower = 0;
-            rowWordPower = 0;
+            
           }
-          
+          rowLetterPower = 0;
+          rowWordPower = 0;
           rowWord = ""
         } else if (fill[j][i] != " ") {
+          if (fill[j][i]=="F") {
+            console.log("coordinates of f: " + [j,i])
+          }
           let power = checkPowerType([j,i]);
-          console.log("power163: " + power)
           if (power != "none") {
+            console.log("power: " + power + " for " + fill[j][i])
             if (power == "double letter") {
               rowLetterPower += letterPoints[fill[j][i] as keyof letterPointsDictionary]
             } else if (power == "triple letter") {
@@ -178,9 +188,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
     }
 
     
-    if (rack.length == 8) {
-      toCheck = [toCheck[0]]
-    }
+
     console.log("words to check: " + toCheck);
     for (let i = 0; i < toCheck.length; i++) {
       let word: string = toCheck[i]
@@ -190,9 +198,6 @@ export default function Grid ({grid}:{grid:GridBase})  {
       }
     };
 
-    if (rack.length == 8) {
-      toScore = [toScore[0]]
-    }
     console.log("toScore: " + toScore)
     let pointTotal = 0;
     for (let i = 0; i < toScore.length; i++) {
@@ -217,8 +222,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
   const checkArrayInArray = (arr1: Array<Array<number>>, arr2: Array<number>) => {
     for (let i = 0; i < arr1.length; i++) {
-      console.log(arr1[i])
-      if (arr1[i] == arr2) {
+      if (arr1[i].join() == arr2.join()) {
         return true
       }
     }
