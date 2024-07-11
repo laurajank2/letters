@@ -14,12 +14,12 @@ export default function Gameplay() {
     var spacesFilledVar = [...Array(9)].map(e => Array(9).fill(value)); 
     const [fill, setFill] = useState<Array<Array<string>>>(spacesFilledVar);
 
-    const dummyLi: HTMLLIElement = document.createElement('li')
+
     var tileStart: Tile = {
         letter: " ",
         row: -1,
         col: -1,
-        html: dummyLi,
+        html: null,
         from: "start"
     };
     const [tile, setTile] = useState<Tile>(tileStart)

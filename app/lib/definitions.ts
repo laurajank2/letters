@@ -14,7 +14,7 @@ export type Tile = {
     letter: string | null,
     row: number,
     col: number
-    html: HTMLLIElement,
+    html: HTMLLIElement | null,
     from: string
 }
 

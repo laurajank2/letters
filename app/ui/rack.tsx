@@ -42,7 +42,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
 
     if (clickedTile.classList.contains('selected')) {
       clickedTile.classList.remove('selected');
-    } else {
+    } else if (tile.html != null) {
       tile.html.classList.remove('selected');
       clickedTile.classList.add('selected');
     }
@@ -53,8 +53,11 @@ export default function Rack ({grid}:{grid:GridBase})  {
         let newRack = rack;
         newRack.push(tile.letter);
         setRack(newRack);
-        tile.html?.classList.remove('selected');
+        if (tile.html != null) {
+          tile.html.classList.remove('selected');
 
+        }
+       
         const dummyLi: HTMLLIElement = document.createElement('li')
         var newSelectedTile: Tile = {
             letter: " ",
@@ -64,9 +67,11 @@ export default function Rack ({grid}:{grid:GridBase})  {
             from: "start"
         }
     
-        tile.html?.classList.remove('selected');
-        tile.html.getElementsByClassName("space-letter")[0].textContent = " ";
-        fill[tile.row][tile.col] = " ";
+        if (tile.html != null) {
+          tile.html?.classList.remove('selected');
+          tile.html.getElementsByClassName("space-letter")[0].textContent = " ";
+        }
+       fill[tile.row][tile.col] = " ";
         const newFill = fill;
         setFill(newFill);
         setTile(newSelectedTile);

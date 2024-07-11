@@ -293,9 +293,9 @@ export default function Grid ({grid}:{grid:GridBase})  {
     }
     
     //remove the tile from rack
-    if (tile.from == "rack") {
-      if (tile.html?.classList.contains('selected')) {
-        tile.html?.classList.remove('selected');
+    if (tile.from == "rack" && tile.html != null) {
+      if (tile.html.classList.contains('selected')) {
+        tile.html.classList.remove('selected');
         const newRack = removeFromRack(tile.letter? tile.letter: "", rack);
         setRack(newRack);
       }
@@ -328,7 +328,9 @@ export default function Grid ({grid}:{grid:GridBase})  {
       from: (newLetter == " ") ? "start" : "board"
     }
 
-    tile.html?.classList.remove('selected');
+    if (tile.html != null) {
+      tile.html.classList.remove('selected');
+    }
     space.classList.add('selected');
     setTile(newSelectedTile);
 
@@ -358,7 +360,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
       from: (newLetter == " ") ? "start" : "board"
     }
 
-    tile.html?.classList.remove('selected');
+    if (tile.html != null) {
+      tile.html.classList.remove('selected');
+    }
+
 
     //set space content to the tile's letter
     space.getElementsByClassName("space-letter")[0].textContent = tile.letter ? tile.letter : " "
@@ -367,8 +372,10 @@ export default function Grid ({grid}:{grid:GridBase})  {
 
 
 
-    tile.html.getElementsByClassName("space-letter")[0].textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
-
+    if (tile.html != null) {
+      tile.html.getElementsByClassName("space-letter")[0].textContent = newSelectedTile.letter ? newSelectedTile.letter : " "
+    }
+    
     fill[tile.row][tile.col] = newSelectedTile.letter ? newSelectedTile.letter : " "
 
     const dummyLi: HTMLLIElement = document.createElement('li')
