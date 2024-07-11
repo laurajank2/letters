@@ -30,7 +30,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
         target = target.parentNode ? (target.parentNode as HTMLLIElement) : target
     }
 
-    const clickedTile : HTMLLIElement = (target as HTMLLIElement);
+    var clickedTile: HTMLLIElement = (target as HTMLLIElement);
 
     var newTile: Tile = {
         letter: clickedTile.getElementsByClassName("tile-letter")[0].textContent ? clickedTile.getElementsByClassName("tile-letter")[0].textContent : " " ,
@@ -39,6 +39,12 @@ export default function Rack ({grid}:{grid:GridBase})  {
         html: clickedTile,
         from: "rack"
     }
+    if (clickedTile.classList.contains('selected')) {
+      clickedTile.classList.remove('selected');
+    } else if (tile.html != null) {
+      tile.html.classList.remove('selected');
+      clickedTile.classList.add('selected');
+    }
 
     setTile(newTile)
 
@@ -46,16 +52,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
   };
 
   useEffect(() => {
-    if (tile.html != null) {
-      const clickedTile = tile.html as HTMLLIElement;
-      if (clickedTile.classList.contains('selected')) {
-        clickedTile.classList.remove('selected');
-      } else if (tile.html != null) {
-        console.log(tile.letter)
-        tile.html.classList.remove('selected');
-        clickedTile.classList.add('selected');
-      }
-    }
+    
     
   }, [tile])
 
