@@ -39,10 +39,13 @@ export default function Rack ({grid}:{grid:GridBase})  {
         html: clickedTile,
         from: "rack"
     }
+
+    if (tile.html != null) {
+      tile.html.classList.remove('selected');
+    }
     if (clickedTile.classList.contains('selected')) {
       clickedTile.classList.remove('selected');
-    } else if (tile.html != null) {
-      tile.html.classList.remove('selected');
+    } else {
       clickedTile.classList.add('selected');
     }
 
@@ -50,11 +53,6 @@ export default function Rack ({grid}:{grid:GridBase})  {
 
     
   };
-
-  useEffect(() => {
-    
-    
-  }, [tile])
 
   const handleTrayClick = () => {
     if (tile.from == "board" && tile.letter != " " && tile.letter != null) {
