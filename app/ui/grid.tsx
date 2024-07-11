@@ -250,6 +250,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
           if ((fill[i+1] === undefined || fill[i+1][j] == " ") && (fill[i-1] === undefined || fill[i-1][j] == " ") && (fill[i][j+1] === undefined|| fill[i][j+1] == " ") && (fill[i][j-1] === undefined || fill[i][j-1] == " ")) {
             const newAdvert = "Place tile next to one on the board"
             setAdvert(newAdvert);
+            setPoint(0);
             return false;
           }
         }
@@ -258,10 +259,6 @@ export default function Grid ({grid}:{grid:GridBase})  {
     const newAdvert = "Make words!"
     setAdvert(newAdvert);
     return true;
-  }
-
-  const countPoints = () => {
-
   }
 
   const putTileOnBoardFromRack = async (space:  HTMLLIElement, row: number, col: number) => {
