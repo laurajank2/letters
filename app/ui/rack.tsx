@@ -22,6 +22,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
 
 
   const handleTileClick = (e:  React.MouseEvent<HTMLLIElement>, row: number, col: number) => {
+    console.log("RACK TILE CLICK")
 
     let target = (e.target as HTMLElement)
 
@@ -32,7 +33,7 @@ export default function Rack ({grid}:{grid:GridBase})  {
     const clickedTile : HTMLLIElement = (target as HTMLLIElement);
 
     var newTile: Tile = {
-        letter: clickedTile.textContent ? clickedTile.textContent[0] : " " ,
+        letter: clickedTile.getElementsByClassName("tile-letter")[0].textContent ? clickedTile.getElementsByClassName("tile-letter")[0].textContent : " " ,
         row: row,
         col: col,
         html: clickedTile,
@@ -41,13 +42,22 @@ export default function Rack ({grid}:{grid:GridBase})  {
 
     setTile(newTile)
 
-    if (clickedTile.classList.contains('selected')) {
-      clickedTile.classList.remove('selected');
-    } else if (tile.html != null) {
-      tile.html.classList.remove('selected');
-      clickedTile.classList.add('selected');
-    }
+    
   };
+
+  useEffect(() => {
+    if (tile.html != null) {
+      const clickedTile = tile.html as HTMLLIElement;
+      if (clickedTile.classList.contains('selected')) {
+        clickedTile.classList.remove('selected');
+      } else if (tile.html != null) {
+        console.log(tile.letter)
+        tile.html.classList.remove('selected');
+        clickedTile.classList.add('selected');
+      }
+    }
+    
+  }, [tile])
 
   const handleTrayClick = () => {
     if (tile.from == "board" && tile.letter != " " && tile.letter != null) {
@@ -72,9 +82,9 @@ export default function Rack ({grid}:{grid:GridBase})  {
           tile.html.getElementsByClassName("space-letter")[0].textContent = " ";
         }
        fill[tile.row][tile.col] = " ";
-        const newFill = fill;
-        setFill(newFill);
-        setTile(newSelectedTile);
+      const newFill = fill;
+      setFill(newFill);
+      setTile(newSelectedTile);
 
     }
   }
