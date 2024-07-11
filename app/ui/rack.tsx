@@ -58,12 +58,11 @@ export default function Rack ({grid}:{grid:GridBase})  {
 
         }
        
-        const dummyLi: HTMLLIElement = document.createElement('li')
         var newSelectedTile: Tile = {
             letter: " ",
             row: -1,
             col: -1,
-            html: dummyLi,
+            html: null,
             from: "start"
         }
     

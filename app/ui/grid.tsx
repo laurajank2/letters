@@ -378,12 +378,11 @@ export default function Grid ({grid}:{grid:GridBase})  {
     
     fill[tile.row][tile.col] = newSelectedTile.letter ? newSelectedTile.letter : " "
 
-    const dummyLi: HTMLLIElement = document.createElement('li')
     var neutralTile: Tile = {
       letter: " ",
       row: -1,
       col: -1,
-      html: dummyLi,
+      html: null,
       from: "start"
     }
 

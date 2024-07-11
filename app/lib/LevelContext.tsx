@@ -14,12 +14,11 @@ setFill: () => {},
 export const useGridFillContext = () => useContext(GridFillContext)
 
 //tracks selected tile
-const dummyLi: HTMLLIElement = document.createElement('li')
 var tile: Tile = {
     letter: " ",
     row: -1,
     col: -1,
-    html: dummyLi,
+    html: null,
     from: "start"
 }
 export const SelectedTileContext = createContext<TileContextContent>({
