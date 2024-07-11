@@ -5,6 +5,9 @@ import "./styles.css";
 import Rack from "./rack";
 import { useContext } from "react";
 import { useGlobalContext, useRackContext } from "../lib/LevelContext";
+import dynamic from 'next/dynamic'
+ 
+const NoSSRRack = dynamic(() => import('../ui/rack'), { ssr: false })
 
 export default function RackBase() {
 
@@ -22,7 +25,7 @@ export default function RackBase() {
 
   return (
     <div className="rack-base">
-      <Rack
+      <NoSSRRack
         grid={rackBase}
       />
     </div>

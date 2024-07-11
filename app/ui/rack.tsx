@@ -1,12 +1,13 @@
 'use client';
 
-import React, {Component, useState} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import { GridBase, letterPointsDictionary, Tile } from '../lib/definitions';
 import { useContext } from 'react';
 import { letterPointsContext, useGlobalContext, useGridFillContext, useRackContext, useSelectedTileContext } from '../lib/LevelContext';
 
 
 export default function Rack ({grid}:{grid:GridBase})  {
+
   const cells = new Array(grid.cells).fill(0);
   const rows = new Array(grid.rows).fill(0);
 

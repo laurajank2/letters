@@ -110,4 +110,35 @@ export const letterPointsContext= createContext<letterPointsDictionary>({
     Z:10
 })
 
+var tileBag: string[] = [ "A", "A", "A", "A", "A", "A", "A", "A", "A", 
+    "G", "G", "G", "M", "M", "S", "S", "S", "S","Y", "Y", "B", "B", "H", 
+    "H", "N", "N","N", "N", "N", "N", "T", "T", "T", "T", "T", "T", "Z",
+    "C", "C", "I", "I", "I", "I", "I", "I", "I", "I", "I", "O", "O", "O", 
+    "O", "O", "O", "O", "O", "U", "U", "U", "U", "D", "D", "D", "D", "J", 
+    "P", "P", "V", "V", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+    "E", "E", "K", "Q", "W", "W", "F", "F", "L", "L", "L", "L", "R", "R",
+    "R", "R","R", "R", "X","S","S"
+]
+
+var isQ = false;
+var isU = false;
+
+const takeTileFromBag = () => {
+    var tileIndex = Math.floor(Math.random() * tileBag.length)
+    if (isQ && !isU) {
+        tileIndex = tileBag.indexOf("U")
+        isU = true
+    }
+    
+    var randomLetter = tileBag[tileIndex];
+    if (randomLetter == "Q") {
+        isQ = true
+    }
+    tileBag = removeFromRack(randomLetter, tileBag)
+    return randomLetter
+}
+var rackStart: string[] = [takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag(), takeTileFromBag()]
+
+export const tileRackContext = createContext<Array<string>>(rackStart);
+
 
