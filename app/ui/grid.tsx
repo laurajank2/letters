@@ -137,7 +137,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
         }
 
         //check row word
-        if(rowWord != "" && (fill[j][i] == " " || i==8)) {
+        if(rowWord != "" && (fill[j][i] == " " || j==8)) {
           if (fill[j][i] != " ") {
             let power = checkPowerType([j,i]);
             if (power != "none") {
