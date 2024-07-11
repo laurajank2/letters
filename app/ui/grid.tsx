@@ -303,13 +303,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
     
     setTile(newSelectedTile);
 
-    const validWords: boolean = await checkWordValidity()
-    if (!validWords) {
-      const newAdvert = "Something on your board isn't a word. Keep trying!"
-      setAdvert(newAdvert);
-    } else {
-      checkBoardValidity();
-    }
+    checkWords();
 
   }
 
@@ -334,13 +328,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
     space.classList.add('selected');
     setTile(newSelectedTile);
 
-    const validWords: boolean = await checkWordValidity()
-    if (!validWords) {
-      const newAdvert = "Something on your board isn't a word. Keep trying!"
-      setAdvert(newAdvert);
-    } else {
-      checkBoardValidity();
-    }
+    checkWords();
     
   }
 
@@ -390,13 +378,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
     setFill(newFill);
     setTile(neutralTile);
 
-    const validWords: boolean = await checkWordValidity()
-    if (!validWords) {
-      const newAdvert = "Something on your board isn't a word. Keep trying!"
-      setAdvert(newAdvert);
-    } else {
-      checkBoardValidity();
-    }
+    checkWords();
   }
 
   const checkWords = async () => {
@@ -404,6 +386,7 @@ export default function Grid ({grid}:{grid:GridBase})  {
     if (!validWords) {
       const newAdvert = "Something on your board isn't a word. Keep trying!"
       setAdvert(newAdvert);
+      setPoint(0);
     } else {
       checkBoardValidity();
     }
